@@ -1,13 +1,13 @@
-#owlDVR_SpaceSkip: OptiX/OWL-Accelerated Space Skipping
+# owlDVR_SpaceSkip: OptiX/OWL-Accelerated Space Skipping
 
 This repository contains sample code for our EGPGV 2021 Paper on
 (OWL-based) OptiX-Accelerated Space Skipping for Direct Volume
 Rendering (DVR):
 
-Ingo Wald, Stefan Zellmann, Nate Morrical. "Faster RTX-Accelerated
+`Ingo Wald, Stefan Zellmann, Nate Morrical. "Faster RTX-Accelerated
 Empty Space Skipping using Triangulated Active Region Boundary
 Geometry". Eurographics Symposium on Parallel Graphics and
-Visualization (EGPGV 2021).
+Visualization (EGPGV 2021).`
 https://www.researchgate.net/publication/351428822_Faster_RTX-Accelerated_Empty_Space_Skipping_using_Triangulated_Active_Region_Boundary_Geometry
 
 In addition to allowing readers of that paper to see what exactly our
