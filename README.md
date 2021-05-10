@@ -1,4 +1,4 @@
-# owlDVR_SpaceSkip: OptiX/OWL-Accelerated Space Skipping
+# owlDVR_SpaceSkip: Sample Code for our "OptiX-Acclerated Space Skipping using Active Region Boundary Geometry" Paper
 
 This repository contains sample code for our EGPGV 2021 Paper on
 (OWL-based) OptiX-Accelerated Space Skipping for Direct Volume
