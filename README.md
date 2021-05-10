@@ -1,4 +1,3 @@
-# owlDVR_SpaceSkip: Sample Code for our "OptiX-Acclerated Space Skipping using Active Region Boundary Geometry" Paper
 
 ![](ss-teaser.png)
 
