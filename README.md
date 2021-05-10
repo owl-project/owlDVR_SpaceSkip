@@ -20,7 +20,7 @@ use OWL.
 All rendering code in this paper uses OWL
 (https://github.com/owl-project/owl); for the interactive Transfer
 Function editor we use another helper project (using QT), named
-cuteeOWL (https://github.com/owl-project/cuteeOWL). Both should be pulled in via git submodules (ie, youw ant to clone with "--recursive" flag, 
+cuteeOWL (https://github.com/owl-project/cuteeOWL). Both should be pulled in via git submodules (ie, you want to clone with "--recursive" flag, 
 
 	git clone --recursive https://github.com/owl-project/owlDVR_SpaceSkip
 	
