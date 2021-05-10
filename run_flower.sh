@@ -1,0 +1,1 @@
+mm && ./owlDVRViewer /space/structured/flower/flower_uint.raw -t uchar -dims 1024 1024 1024 -xf /space/structured/flower/flower_uint.xf -win 1024 1024  --camera 662.634 548.584 1473.54 502.974 484.48 524.313 0 0 1 -fovy 70 ${DVRVIEWER_FLAGS}
