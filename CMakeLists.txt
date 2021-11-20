@@ -14,56 +14,45 @@
 # limitations under the License.                                           #
 # ======================================================================== #
 
-if (POLICY CMP0048)
-  cmake_policy(SET CMP0048 NEW)
+cmake_minimum_required(VERSION 3.12)
+
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.18)
+  cmake_policy(SET CMP0104 NEW)
 endif()
-if (POLICY CMP0071)
-  cmake_policy(SET CMP0071 NEW)
-endif()
-project(Optix-OWL VERSION 1.0.4)
-cmake_minimum_required(VERSION 2.8)
 
-option(DUMP_FRAMES "DUMP_FRAMES" OFF)
+project(Optix-OWL VERSION 1.0.4 LANGUAGES C CXX CUDA)
 
-set(owl_dir ${PROJECT_SOURCE_DIR}/submodules/owl)
-add_subdirectory(${owl_dir} EXCLUDE_FROM_ALL)
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${owl_dir}/owl/cmake/")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-include(configure_build_type)
-
-add_definitions(${OWL_CXX_FLAGS})
-
-include_directories(${OWL_INCLUDES})
-
+add_subdirectory(submodules/owl EXCLUDE_FROM_ALL)
 add_subdirectory(submodules/cuteeOWL EXCLUDE_FROM_ALL)
 
+include(embed_ptx)
+
+option(DUMP_FRAMES "DUMP_FRAMES" OFF)
 if (DUMP_FRAMES)
   add_definitions(-DDUMP_FRAMES=1)
 endif()
 
-include_directories(${QT_OWL_INCLUDES})
+embed_ptx(
+  OUTPUT_TARGET
+    deviceCode_ptx
+  EMBEDDED_SYMBOL_NAMES
+    deviceCode_ptx
+  PTX_LINK_LIBRARIES
+    qtOWL
+  SOURCES
+    deviceCode.cu
+)
 
-cuda_compile_and_embed(deviceCode_ptx deviceCode.cu)
-set_property(SOURCE ${deviceCode_ptx} PROPERTY SKIP_AUTOMOC ON)
-
-set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${OWL_CXX_FLAGS}")
-find_package(Qt5Widgets REQUIRED)
-set(CMAKE_AUTOMOC ON)
-cuda_add_executable(owlDVRViewer
-  ${deviceCode_ptx}
+add_executable(owlDVRViewer
   viewer.cpp
   Model.cpp
   Renderer.cpp
   SpaceSkipper.cu
-  )
+)
 
-target_link_libraries(owlDVRViewer
-  ${OWL_LIBRARIES}
-  ${QT_OWL_LIBRARIES}
-  )
-#QT_OWL_LINK(owlDVRViewer)
+target_link_libraries(owlDVRViewer PRIVATE qtOWL deviceCode_ptx)
 
 # not needed for public release
 #add_executable(dvrSubSampleTool

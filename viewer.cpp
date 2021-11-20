@@ -32,7 +32,7 @@ namespace dvr {
   using qtOWL::SimpleCamera;
 
   const int XF_ALPHA_COUNT = 128;
-  
+
   struct {
     bool  showBoxes = 0;
     // int   spp = 4;
@@ -53,7 +53,7 @@ namespace dvr {
     float dt = .5f;
     vec2i windowSize  = /*default: one quarter of screen*/vec2i(0); //vec2i(1024,1024);
   } cmdline;
-  
+
   void usage(const std::string &err)
   {
     if (err != "")
@@ -64,11 +64,11 @@ namespace dvr {
     std::cout << std::endl;
     exit(1);
   }
-  
+
   struct Viewer : public qtOWL::OWLViewer {
   public:
     typedef qtOWL::OWLViewer inherited;
-    
+
     Viewer(Renderer *renderer,
            qtOWL::XFEditor *xfEditor)
       : inherited("owlDVR Sample Viewer", cmdline.windowSize),
@@ -78,7 +78,7 @@ namespace dvr {
       renderer->set_dt(cmdline.dt);
       renderer->setColorMap(xfEditor->getColorMap());
     }
-    
+
     /*! this function gets called whenever the viewer widget changes
       camera settings */
     void cameraChanged() override;
@@ -138,22 +138,22 @@ namespace dvr {
         break;
       }
     }
-    
-    
+
+
     // signals:
     //   ;
   public slots:
     void colorMapChanged(qtOWL::XFEditor *xf);
-    void rangeChanged(interval<double> r);
+    void rangeChanged(range1f r);
     void opacityScaleChanged(double scale);
-                                     
+
   public:
 
     Renderer *const renderer;
     /* pointer to xf editor, so we can sve transfer functions on keypress */
     qtOWL::XFEditor *const xfEditor;
   };
-  
+
   void Viewer::colorMapChanged(qtOWL::XFEditor *xfEditor)
   {
     renderer->setColorMap(xfEditor->getColorMap());
@@ -161,7 +161,7 @@ namespace dvr {
   }
 
   // re-map [0,1] range from gui to actual value range
-  void Viewer::rangeChanged(interval<double> r)
+  void Viewer::rangeChanged(range1f r)
   {
     float lo = min(r.lower,r.upper);
     float hi = max(r.lower,r.upper);
@@ -179,31 +179,31 @@ namespace dvr {
   }
 
 
-  void Viewer::resize(const vec2i &newSize) 
+  void Viewer::resize(const vec2i &newSize)
   {
     // ... tell parent to resize (also resizes the pbo in the wingdow)
     inherited::resize(newSize);
     cameraChanged();
     renderer->resetAccum();
   }
-    
+
   /*! this function gets called whenever the viewer widget changes
     camera settings */
-  void Viewer::cameraChanged() 
+  void Viewer::cameraChanged()
   {
     inherited::cameraChanged();
     const SimpleCamera &camera = inherited::getCamera();
-    
+
     const vec3f screen_du = camera.screen.horizontal / float(getWindowSize().x);
     const vec3f screen_dv = camera.screen.vertical   / float(getWindowSize().y);
     const vec3f screen_00 = camera.screen.lower_left;
     renderer->setCamera(camera.lens.center,screen_00,screen_du,screen_dv);
     renderer->resetAccum();
   }
-    
+
 
   /*! gets called whenever the viewer needs us to re-render out widget */
-  void Viewer::render() 
+  void Viewer::render()
   {
     static double t_last = getCurrentTime();
     static double t_first = t_last;
@@ -211,7 +211,7 @@ namespace dvr {
     if (renderer->alwaysRebuild)
       colorMapChanged(xfEditor);
     renderer->render(fbSize,fbPointer);
-      
+
     double t_now = getCurrentTime();
     static double avg_t = t_now-t_last;
     // if (t_last >= 0)
@@ -245,11 +245,11 @@ namespace dvr {
   extern "C" int main(int argc, char **argv)
   {
     QApplication app(argc,argv);
-    
+
     std::string inFileName;
 
     // Viewer::initGlut(argc,argv);
-    
+
     for (int i=1;i<argc;i++) {
       const std::string arg = argv[i];
       if (arg[0] != '-') {
@@ -313,14 +313,14 @@ namespace dvr {
       else
         usage("unknown cmdline arg '"+arg+"'");
     }
-    
+
     if (inFileName == "")
       usage("no filename specified");
     if (cmdline.formatString == "")
       usage("no format string specified (-f float|uchar)");
     if (cmdline.dims == vec3i(0))
       usage("no volume dims specified (-dims x y z)");
-        
+
     Model::SP model = Model::load(inFileName,cmdline.dims,cmdline.formatString,
                                   cmdline.subBrickID,cmdline.subBrickSize);
 
@@ -329,11 +329,11 @@ namespace dvr {
 #else
     const box3f modelBounds = model->getBounds();
 #endif
-    
+
     qtOWL::XFEditor *xfEditor = new qtOWL::XFEditor;
     Renderer renderer(model);
     renderer.setShowBoxesMode(cmdline.showBoxes);
-  
+
     Viewer *viewer = new Viewer(&renderer,xfEditor);
     // viewer->resize(QSize(128,128));
     // if (cmdline.windowSize != vec2i(0))
@@ -365,19 +365,19 @@ namespace dvr {
                      viewer, &Viewer::rangeChanged);
     QObject::connect(xfEditor,&qtOWL::XFEditor::opacityScaleChanged,
                      viewer, &Viewer::opacityScaleChanged);
-    
+
 
     if (cmdline.xfFileName != "")
       xfEditor->loadFrom(cmdline.xfFileName);
-    
+
     QMainWindow guiWindow;
     guiWindow.setCentralWidget(xfEditor);
-    
+
     viewer->show();
     guiWindow.show();
 
     return app.exec();
   }
-  
+
 }
 
