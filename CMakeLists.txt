@@ -20,7 +20,7 @@ endif()
 if (POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
-project(Optix-OWL VERSION 1.0.4)
+project(Optix-OWL VERSION 1.0.4 LANGUAGES C CXX CUDA)
 cmake_minimum_required(VERSION 2.8)
 
 option(DUMP_FRAMES "DUMP_FRAMES" OFF)
@@ -31,9 +31,7 @@ add_subdirectory(${owl_dir} EXCLUDE_FROM_ALL)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${owl_dir}/owl/cmake/")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-include(configure_build_type)
-
-add_definitions(${OWL_CXX_FLAGS})
+# add_definitions(${OWL_CXX_FLAGS})
 
 include_directories(${OWL_INCLUDES})
 
@@ -45,14 +43,21 @@ endif()
 
 include_directories(${QT_OWL_INCLUDES})
 
-cuda_compile_and_embed(deviceCode_ptx deviceCode.cu)
+# cuda_compile_and_embed(deviceCode_ptx deviceCode.cu)
+embed_ptx(
+  OUTPUT_TARGET
+    deviceCode_ptx
+  PTX_LINK_LIBRARIES
+    owl::owl
+  SOURCES
+    deviceCode.cu
+)
 set_property(SOURCE ${deviceCode_ptx} PROPERTY SKIP_AUTOMOC ON)
 
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${OWL_CXX_FLAGS}")
 find_package(Qt5Widgets REQUIRED)
 set(CMAKE_AUTOMOC ON)
-cuda_add_executable(owlDVRViewer
-  ${deviceCode_ptx}
+add_executable(owlDVRViewer
   viewer.cpp
   Model.cpp
   Renderer.cpp
@@ -60,8 +65,10 @@ cuda_add_executable(owlDVRViewer
   )
 
 target_link_libraries(owlDVRViewer
-  ${OWL_LIBRARIES}
-  ${QT_OWL_LIBRARIES}
+    PRIVATE 
+    owl::owl 
+    deviceCode_ptx
+    qtOWL
   )
 #QT_OWL_LINK(owlDVRViewer)
 
