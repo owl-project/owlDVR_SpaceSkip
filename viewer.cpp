@@ -144,7 +144,7 @@ namespace dvr {
     //   ;
   public slots:
     void colorMapChanged(qtOWL::XFEditor *xf);
-    void rangeChanged(interval<double> r);
+    void rangeChanged(range1f r);
     void opacityScaleChanged(double scale);
                                      
   public:
@@ -161,7 +161,7 @@ namespace dvr {
   }
 
   // re-map [0,1] range from gui to actual value range
-  void Viewer::rangeChanged(interval<double> r)
+  void Viewer::rangeChanged(range1f r)
   {
     float lo = min(r.lower,r.upper);
     float hi = max(r.lower,r.upper);

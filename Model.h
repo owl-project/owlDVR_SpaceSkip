@@ -28,6 +28,9 @@
 
 namespace dvr {
 
+#define CUDA_CALL OWL_CUDA_CALL
+#define CUDA_SYNC_CHECK OWL_CUDA_SYNC_CHECK
+  
   using namespace owl;
   using namespace owl::common;
   
